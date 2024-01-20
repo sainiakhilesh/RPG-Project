@@ -1,4 +1,3 @@
-using RPG.Combat;
 using RPG.Core;
 using System;
 using System.Collections;
@@ -8,26 +7,28 @@ using UnityEngine.AI;
 
 namespace RPG.Movement
 {
-    public class Mover : MonoBehaviour
+    public class Mover : MonoBehaviour, IAction
     {
         [SerializeField] private Transform target;
 
         private NavMeshAgent navMeshAgent;
+        private Health health;
 
         private void Start()
         {
+            health = GetComponent<Health>();
             navMeshAgent = GetComponent<NavMeshAgent>();
         }
 
         private void Update()
         {
+            navMeshAgent.enabled = !health.IsDead();
             UpdateAnimator();
         }
 
         public void StartMoveAction(Vector3 destination)
         {
             GetComponent<ActionScheduler>().StartAction(this);
-            GetComponent<Fighter>().Cancel();
             MoveTo(destination);
         }
 
@@ -37,7 +38,7 @@ namespace RPG.Movement
             navMeshAgent.isStopped = false;
         }
 
-        public void Stop()
+        public void Cancel()
         {
             navMeshAgent.isStopped = true;
         }
